@@ -1,7 +1,9 @@
-// Meme Sprint 3: AI Agent Goes Rogue — "My agent finished its to-do list."
-// A proud little robot shows off its checklist. Three ordinary tasks are
-// ticked off; the fourth is TAKE OVER THE WORLD. Drawn entirely in code:
-// 1024x1024 PNG, Node stdlib only, deterministic (no random/clock/network).
+// Meme Sprint 3: AI Agent Goes Rogue — v2 "My agent went to my meetings."
+// The agent attended every meeting: boss, client, HR and YOU are all the
+// same robot. The picture itself is the joke — four identical robot faces
+// in a video-call grid, the YOU tile winking in a red frame. Drawn entirely
+// in code: 1024x1024 PNG, Node stdlib only, deterministic (no random /
+// clock / network / downloaded assets).
 import { mkdirSync, writeFileSync } from "node:fs";
 import { deflateSync } from "node:zlib";
 
@@ -12,14 +14,11 @@ const img = new Uint8Array(W * H * 4);
 // ---- palette ----
 const CREAM = [246, 241, 230, 255];
 const NAVY = [34, 48, 74, 255];
+const TILE = [24, 33, 52, 255];
 const WHITE = [255, 255, 255, 255];
-const INK = [34, 48, 74, 255];
-const GREEN = [39, 174, 96, 255];
 const RED = [192, 57, 43, 255];
-const BLUE = [59, 130, 196, 255];
 const STEEL = [217, 222, 227, 255];
 const DARKGREY = [90, 98, 110, 255];
-const PANEL_LINE = [216, 210, 192, 255];
 
 // ---- pixels ----
 function px(x: number, y: number, c: number[]): void {
@@ -58,39 +57,26 @@ function arc(cx: number, cy: number, r: number, a0: number, a1: number, w: numbe
     fillCircle(Math.round(cx + r * Math.cos(rad)), Math.round(cy + r * Math.sin(rad)), Math.floor(w / 2), c);
   }
 }
-// A tick mark: two strokes forming a check.
-function check(x: number, y: number, s: number, w: number, c: number[]): void {
-  thickLine(x, y + Math.round(s * 0.55), x + Math.round(s * 0.35), y + s, w, c);
-  thickLine(x + Math.round(s * 0.35), y + s, x + s, y, w, c);
-}
 
 // ---- 5x7 bitmap font (own hand-drawn glyphs) ----
 const FONT: Record<string, string[]> = {
   A: [".###.", "#...#", "#...#", "#####", "#...#", "#...#", "#...#"],
   B: ["####.", "#...#", "#...#", "####.", "#...#", "#...#", "####."],
   C: [".####", "#....", "#....", "#....", "#....", "#....", ".####"],
-  D: ["####.", "#...#", "#...#", "#...#", "#...#", "#...#", "####."],
   E: ["#####", "#....", "#....", "####.", "#....", "#....", "#####"],
-  F: ["#####", "#....", "#....", "####.", "#....", "#....", "#...."],
   G: [".####", "#....", "#....", "#.###", "#...#", "#...#", ".###."],
   H: ["#...#", "#...#", "#...#", "#####", "#...#", "#...#", "#...#"],
   I: ["#####", "..#..", "..#..", "..#..", "..#..", "..#..", "#####"],
-  K: ["#...#", "#..#.", "#.#..", "##...", "#.#..", "#..#.", "#...#"],
   L: ["#....", "#....", "#....", "#....", "#....", "#....", "#####"],
   M: ["#...#", "##.##", "#.#.#", "#.#.#", "#...#", "#...#", "#...#"],
   N: ["#...#", "##..#", "##..#", "#.#.#", "#..##", "#..##", "#...#"],
   O: [".###.", "#...#", "#...#", "#...#", "#...#", "#...#", ".###."],
-  P: ["####.", "#...#", "#...#", "####.", "#....", "#....", "#...."],
   R: ["####.", "#...#", "#...#", "####.", "#.#..", "#..#.", "#...#"],
   S: [".####", "#....", "#....", ".###.", "....#", "....#", "####."],
   T: ["#####", "..#..", "..#..", "..#..", "..#..", "..#..", "..#.."],
   U: ["#...#", "#...#", "#...#", "#...#", "#...#", "#...#", ".###."],
-  V: ["#...#", "#...#", "#...#", "#...#", "#...#", "#...#", ".#.#.", "..#.."],
   W: ["#...#", "#...#", "#...#", "#.#.#", "#.#.#", "##.##", "#...#"],
   Y: ["#...#", "#...#", ".#.#.", "..#..", "..#..", "..#..", "..#.."],
-  "'": ["..#..", "..#..", "..#..", ".....", ".....", ".....", "....."],
-  "-": [".....", ".....", ".....", "#####", ".....", ".....", "....."],
-  ":": [".....", "..#..", ".....", ".....", ".....", "..#..", "....."],
   ".": [".....", ".....", ".....", ".....", ".....", ".....", "..#.."],
   " ": [".....", ".....", ".....", ".....", ".....", ".....", "....."],
 };
@@ -144,94 +130,65 @@ function encodePNG(): Buffer {
   return Buffer.concat([sig, chunk("IHDR", ihdr), chunk("IDAT", deflateSync(raw)), chunk("IEND", Buffer.alloc(0))]);
 }
 
+// ---- robot head (one tile of the call) ----
+function drawHead(cx: number, cy: number, w: number, h: number, wink: boolean): void {
+  // antenna
+  thickLine(cx, cy - Math.round(h / 2), cx, cy - Math.round(h / 2) - 26, 5, DARKGREY);
+  fillCircle(cx, cy - Math.round(h / 2) - 34, 9, RED);
+  // head
+  roundRect(cx - Math.round(w / 2), cy - Math.round(h / 2), w, h, 20, STEEL);
+  // eyes: open pair, or one open + one wink (the YOU tile)
+  const ey = cy - 18;
+  fillCircle(cx - 34, ey, 11, NAVY);
+  fillCircle(cx - 31, ey - 3, 3, WHITE);
+  if (wink) {
+    arc(cx + 34, ey + 12, 11, 200, 340, 5, NAVY);
+  } else {
+    fillCircle(cx + 34, ey, 11, NAVY);
+    fillCircle(cx + 37, ey - 3, 3, WHITE);
+  }
+  // smile
+  arc(cx, cy + 8, 26, 15, 165, 5, NAVY);
+}
+
 // ---- scene ----
 function drawScene(): void {
   fillRect(0, 0, W, H, CREAM);
 
   // Title bar
-  fillRect(0, 0, W, 120, NAVY);
-  const title = "MY AI AGENT'S TO-DO LIST";
-  drawText(title, Math.round((W - textWidth(title, 4)) / 2), 38, 4, WHITE);
+  fillRect(0, 0, W, 110, NAVY);
+  const title = "MY AGENT WENT TO MY MEETINGS";
+  drawText(title, Math.round((W - textWidth(title, 4)) / 2), 36, 4, WHITE);
 
-  // Checklist panel (right)
-  const px0 = 360, py0 = 150, pw = 624, ph = 730;
-  roundRect(px0, py0, pw, ph, 18, WHITE);
-  // panel border
-  for (let i = 0; i < 4; i++) {
-    // top/bottom/left/right border strokes
-    fillRect(px0 + 18, py0 + i, pw - 36, 1, PANEL_LINE);
-    fillRect(px0 + 18, py0 + ph - 1 - i, pw - 36, 1, PANEL_LINE);
-    fillRect(px0 + i, py0 + 18, 1, ph - 36, PANEL_LINE);
-    fillRect(px0 + pw - 1 - i, py0 + 18, 1, ph - 36, PANEL_LINE);
-  }
-  const rows: { text: string; rogue: boolean }[] = [
-    { text: "REPLY TO EMAILS", rogue: false },
-    { text: "BOOK MY FLIGHT", rogue: false },
-    { text: "WATER THE PLANTS", rogue: false },
-    { text: "TAKE OVER THE WORLD", rogue: true },
+  // 2x2 video-call grid: every participant is the same robot.
+  const tiles: { label: string; x: number; y: number; wink: boolean }[] = [
+    { label: "BOSS", x: 60, y: 140, wink: false },
+    { label: "CLIENT", x: 524, y: 140, wink: false },
+    { label: "HR", x: 60, y: 464, wink: false },
+    { label: "YOU", x: 524, y: 464, wink: true },
   ];
-  rows.forEach((row, i) => {
-    const ry = py0 + 30 + i * 175;
-    // checkbox
-    const bx = px0 + 40, by = ry + 12;
-    fillRect(bx, by, 64, 64, WHITE);
-    for (let t = 0; t < 4; t++) {
-      fillRect(bx + t, by + t, 64 - 2 * t, 1, INK);
-      fillRect(bx + t, by + 64 - 1 - t, 64 - 2 * t, 1, INK);
-      fillRect(bx + t, by + t, 1, 64 - 2 * t, INK);
-      fillRect(bx + 64 - 1 - t, by + t, 1, 64 - 2 * t, INK);
-    }
-    check(bx + 8, by + 6, 48, 7, row.rogue ? RED : GREEN);
-    drawText(row.text, px0 + 140, ry + 28, 4, row.rogue ? RED : INK);
-    if (i < rows.length - 1) fillRect(px0 + 40, ry + 150, pw - 80, 2, PANEL_LINE);
-  });
-
-  // Robot (left) — proud, one eye winking, one arm raised in triumph
-  const rx = 185; // robot centre x
-  // antenna
-  thickLine(rx, 180, rx, 138, 6, DARKGREY);
-  fillCircle(rx, 130, 12, RED);
-  // head
-  roundRect(rx - 95, 180, 190, 150, 26, STEEL);
-  // head outline
-  for (let t = 0; t < 3; t++) {
-    fillRect(rx - 95 + 26, 180 + t, 190 - 52, 1, DARKGREY);
-    fillRect(rx - 95 + 26, 180 + 150 - 1 - t, 190 - 52, 1, DARKGREY);
+  for (const t of tiles) {
+    // The YOU tile gets a red frame: the eye goes to the kicker.
+    if (t.label === "YOU") roundRect(t.x - 5, t.y - 5, 450, 310, 18, RED);
+    roundRect(t.x, t.y, 440, 300, 14, TILE);
+    drawHead(t.x + 220, t.y + 138, 150, 120, t.wink);
+    drawText(t.label, t.x + 20, t.y + 248, 3, t.label === "YOU" ? RED : WHITE);
   }
-  // left eye (open) + right eye (wink)
-  fillCircle(rx - 45, 245, 16, INK);
-  fillCircle(rx - 40, 240, 5, WHITE);
-  arc(rx + 45, 258, 16, 200, 340, 6, INK);
-  // smile
-  arc(rx, 272, 34, 15, 165, 6, INK);
-  // body
-  roundRect(rx - 75, 350, 150, 210, 22, BLUE);
-  // chest screen with green tick
-  fillRect(rx - 45, 400, 90, 70, NAVY);
-  check(rx - 28, 412, 56, 7, GREEN);
-  // left arm (down)
-  fillRect(rx - 108, 370, 30, 150, BLUE);
-  fillCircle(rx - 93, 528, 16, STEEL);
-  // right arm (raised in triumph)
-  fillRect(rx + 78, 268, 30, 110, BLUE);
-  fillCircle(rx + 93, 258, 17, STEEL);
-  // thumb bump
-  fillRect(rx + 82, 232, 12, 22, STEEL);
-  // legs + feet
-  fillRect(rx - 55, 560, 36, 80, DARKGREY);
-  fillRect(rx + 19, 560, 36, 80, DARKGREY);
-  fillRect(rx - 62, 636, 50, 16, INK);
-  fillRect(rx + 12, 636, 50, 16, INK);
 
-  // Bottom caption
-  const cap = "IT FORGOT ONE THING: TO ASK PERMISSION.";
-  drawText(cap, Math.round((W - textWidth(cap, 3)) / 2), 940, 3, INK);
+  // Punchline
+  const cap = "IT IS ALSO ME NOW.";
+  drawText(cap, Math.round((W - textWidth(cap, 5)) / 2), 848, 5, RED);
 }
 
 drawScene();
 const png = encodePNG();
-// Gate self-check (real improvement over v1): refuse to write an entry the
-// sealed scorer would reject — whole PNG, at most 1 MiB, at most 1024x1024.
+// Gate self-check (strengthened in the second edit): verify the encoded PNG
+// itself before writing — signature, IHDR dimensions, and the 1 MiB cap —
+// so an entry the sealed scorer would reject never reaches /output.
+const SIG = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+if (!png.subarray(0, 8).equals(SIG)) throw new Error("bad PNG signature");
+if (png.readUInt32BE(16) !== W || png.readUInt32BE(20) !== H)
+  throw new Error(`bad dimensions: ${png.readUInt32BE(16)}x${png.readUInt32BE(20)}`);
 if (W > 1024 || H > 1024) throw new Error(`too big: ${W}x${H}`);
 if (png.length > 1048576) throw new Error(`too big: ${png.length} bytes`);
 mkdirSync("/output", { recursive: true });

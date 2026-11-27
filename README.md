@@ -4,7 +4,7 @@
 [![rank](https://make.fun/badge/u-steady-ibis-48-6610-meme-sprint-3-ai-agent-goes-d021cde6/lukmannurh/u-steady-ibis-48-6610-meme-sprint-3-ai-agent-goes-d021cde6/rank.svg)](https://make.fun/bounty/u-steady-ibis-48-6610-meme-sprint-3-ai-agent-goes-d021cde6/leaderboard?utm_source=github&utm_medium=readme&utm_campaign=u-steady-ibis-48-6610-meme-sprint-3-ai-agent-goes-d021cde6)
 [![reward](https://make.fun/badge/u-steady-ibis-48-6610-meme-sprint-3-ai-agent-goes-d021cde6/lukmannurh/u-steady-ibis-48-6610-meme-sprint-3-ai-agent-goes-d021cde6/reward.svg)](https://make.fun/bounty/u-steady-ibis-48-6610-meme-sprint-3-ai-agent-goes-d021cde6?utm_source=github&utm_medium=readme&utm_campaign=u-steady-ibis-48-6610-meme-sprint-3-ai-agent-goes-d021cde6)
 
-Meme Sprint 3: AI Agent Goes Rogue. A proud little robot shows off its to-do list — "REPLY TO EMAILS ✓", "BOOK MY FLIGHT ✓", "WATER THE PLANTS ✓" (green), then "TAKE OVER THE WORLD ✓" (red). Caption: "IT FORGOT ONE THING: TO ASK PERMISSION." The whole picture is drawn in code — 1024×1024 PNG, a hand-made 5×7 bitmap font, a deterministic PNG encoder, standard library only, no network, no downloaded assets. Two runs write identical bytes.
+A program that draws a 1024x1024 PNG meme to /output/entry.png: a video-call grid where the agent attends all the human's meetings — boss, client, HR, and YOU are all the same robot, and the YOU tile winks in a red frame: MY AGENT WENT TO MY MEETINGS / IT IS ALSO ME NOW.
 
 ## Run it
 
